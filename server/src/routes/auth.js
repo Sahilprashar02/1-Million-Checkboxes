@@ -1,0 +1,43 @@
+const express = require('express');
+const passport = require('passport');
+const router = express.Router();
+
+// Google OAuth
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/google/callback', 
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+        res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
+    }
+);
+
+// Mock / Guest Auth for local development
+router.get('/guest', (req, res, next) => {
+    passport.authenticate('mock', (err, user) => {
+        if (err || !user) {
+            return res.status(400).json({ error: 'Guest login not available' });
+        }
+        req.logIn(user, (err) => {
+            if (err) return next(err);
+            res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
+        });
+    })(req, res, next);
+});
+
+router.get('/me', (req, res) => {
+    if (req.user) {
+        res.json({ user: req.user });
+    } else {
+        res.status(401).json({ user: null });
+    }
+});
+
+router.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) return next(err);
+        res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
+    });
+});
+
+module.exports = router;

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1 Million Checkboxes | Interactive Grid</title>
+    <meta name="description" content="Collaborative real-time grid of 1,000,000 checkboxes.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Landing Page (Required Auth Wall) -->
+    <div id="landing-page" class="landing-page">
+        <div class="landing-content">
+            <h1 class="gradient-text">1 Million Checkboxes</h1>
+            <p>Sign in to interact with a real-time collaborative grid.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="login-landing-btn" class="btn btn-primary btn-large">Sign in with Google</button>
+                <button id="guest-login-btn" class="btn btn-large" style="background: rgba(255,255,255,0.1)">Enter as Guest</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application (Hidden until Auth) -->
+    <div id="app-container" class="app-container hidden">
+        <header>
+            <div class="logo">
+                <span class="gradient-text">1M</span> Checkboxes
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span id="total-checked">0</span>
+                    <label>Checked</label>
+                </div>
+                <div class="stat-item">
+                    <span id="connection-status">Online</span>
+                    <label>Status</label>
+                </div>
+            </div>
+
+            <div id="user-info" class="auth-controls">
+                <button id="reset-btn" class="btn btn-secondary">Reset Grid</button>
+                <span id="user-name"></span>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Grid Configuration Panel -->
+            <div class="config-panel">
+                <div class="input-group">
+                    <label>Columns:</label>
+                    <input type="number" id="input-cols" value="1000" min="10" max="2000">
+                </div>
+                <div class="input-group">
+                    <label>Rows:</label>
+                    <input type="number" id="input-rows" value="1000" min="10" max="2000">
+                </div>
+                <button id="apply-grid-btn" class="btn btn-primary">Resize</button>
+            </div>
+
+            <div class="grid-wrapper">
+                <div id="grid-container" class="grid-container">
+                    <div id="grid-spacer" class="grid-spacer"></div>
+                    <div id="visible-grid" class="visible-grid"></div>
+                </div>
+            </div>
+            <div id="coords" class="coordinates-overlay">
+                Scroll to explore 1,000,000 bits
+            </div>
+        </main>
+
+        <div id="toast-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
