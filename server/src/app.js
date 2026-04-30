@@ -42,6 +42,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./config/passport')(passport);
+
+// Serve static files from the client directory
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../../client')));
+
 app.use('/auth', require('./routes/auth'));
 
 wss.on('connection', async (ws, request) => {

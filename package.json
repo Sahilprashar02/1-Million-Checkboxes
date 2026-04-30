@@ -2,6 +2,7 @@
   "name": "1-million-checkboxes",
   "version": "1.0.0",
   "scripts": {
+    "start": "cd server && npm start",
     "start:server": "cd server && npm start",
     "start:client": "npx serve client",
     "dev": "npx concurrently \"npm run start:server\" \"npm run start:client\""

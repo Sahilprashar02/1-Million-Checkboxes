@@ -1,8 +1,11 @@
 let COLS = 1000;
 let ROWS = 1000;
 const CELL_SIZE = 24; 
-const BACKEND_URL = 'http://localhost:5000';
-const WS_URL = 'ws://localhost:5000';
+const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:5000' 
+    : window.location.origin;
+
+const WS_URL = BACKEND_URL.replace(/^http/, 'ws');
 
 let socket;
 let checkboxState = new Uint8Array(125000); // 1,000,000 bits default
