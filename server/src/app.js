@@ -32,7 +32,7 @@ const sessionMiddleware = session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Disabled for local development
+        secure: process.env.NODE_ENV === 'production', // Enable for HTTPS on Render
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000 
     }

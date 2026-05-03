@@ -7,7 +7,8 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', 
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
+        console.log('Google Auth successful for user:', req.user.username);
+        res.redirect('/');
     }
 );
 
@@ -16,7 +17,7 @@ router.get('/guest', (req, res, next) => {
         if (err || !user) return res.status(400).json({ error: 'Guest login not available' });
         req.logIn(user, (err) => {
             if (err) return next(err);
-            res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
+            res.redirect('/');
         });
     })(req, res, next);
 });
@@ -32,7 +33,7 @@ router.get('/me', (req, res) => {
 router.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
-        res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
+        res.redirect('/');
     });
 });
 
