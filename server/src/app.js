@@ -23,6 +23,7 @@ const { isRateLimited } = require('./middleware/rateLimiter');
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1); // Required for Render/Heroku to trust secure cookies/redirects
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ noServer: true });
 
