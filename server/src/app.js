@@ -47,7 +47,8 @@ app.use(passport.session());
 require('./config/passport')(passport);
 
 // Serve static frontend files
-app.use(express.static(path.join(__dirname, '../../client')));
+const clientPath = path.resolve(__dirname, '..', '..', 'client');
+app.use(express.static(clientPath));
 
 app.use('/auth', require('./routes/auth'));
 
