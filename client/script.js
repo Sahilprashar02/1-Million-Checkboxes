@@ -106,6 +106,9 @@ function initWS() {
             totalCheckedEl.textContent = '0';
             render();
             showToast('Grid has been reset!', 'info');
+        } else if (msg.type === 'USER_COUNT') {
+            const el = document.getElementById('online-users');
+            if (el) el.textContent = msg.count;
         } else if (msg.type === 'ERROR') {
             showToast(msg.message, 'danger');
         }

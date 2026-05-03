@@ -4,7 +4,9 @@ const WebSocket = require('ws');
 const session = require('express-session');
 const passport = require('passport');
 const cors = require('cors');
+const path = require('path');
 const dotenv = require('dotenv');
+
 const { 
     sub, 
     UPDATE_CHANNEL,
@@ -43,16 +45,25 @@ app.use(passport.session());
 
 require('./config/passport')(passport);
 
-// Serve static files from the client directory
-const path = require('path');
+// Serve static frontend files (for unified production deployment)
 app.use(express.static(path.join(__dirname, '../../client')));
 
 app.use('/auth', require('./routes/auth'));
+
+// Broadcast connected user count to all clients
+function broadcastUserCount() {
+    const count = wss.clients.size;
+    const msg = JSON.stringify({ type: 'USER_COUNT', count });
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) client.send(msg);
+    });
+}
 
 wss.on('connection', async (ws, request) => {
     const user = request.session && request.session.passport && request.session.passport.user;
     const isAuthenticated = !!user;
 
+    // Send full grid state on connect
     try {
         const config = await getGridConfig();
         const fullState = await getFullState();
@@ -68,25 +79,32 @@ wss.on('connection', async (ws, request) => {
         console.error('Error sending initial state:', err);
     }
 
+    // Notify all clients of new user count
+    broadcastUserCount();
+
     ws.on('message', async (message) => {
         try {
             const payload = JSON.parse(message);
+
             if (payload.type === 'TOGGLE') {
                 if (!isAuthenticated) return;
                 const { index, value } = payload;
                 
+                // Custom sliding-window rate limiter (10 toggles per second per user)
                 const limitKey = `rl:ws:${user.id}`;
                 if (await isRateLimited(limitKey, 10, 1)) {
                     return ws.send(JSON.stringify({ type: 'ERROR', message: 'Rate limit exceeded' }));
                 }
 
                 await setCheckboxState(index, value ? 1 : 0);
+
             } else if (payload.type === 'RESIZE') {
                 if (!isAuthenticated) return;
                 const { cols, rows } = payload;
                 if (cols > 0 && rows > 0 && cols * rows <= 1000000) {
                     await setGridConfig(cols, rows);
                 }
+
             } else if (payload.type === 'RESET') {
                 if (!isAuthenticated) return;
                 await resetGrid();
@@ -94,6 +112,11 @@ wss.on('connection', async (ws, request) => {
         } catch (err) {
             console.error('WS Message error:', err);
         }
+    });
+
+    // Notify all clients when a user disconnects
+    ws.on('close', () => {
+        broadcastUserCount();
     });
 });
 
@@ -105,6 +128,7 @@ server.on('upgrade', (request, socket, head) => {
     });
 });
 
+// Redis Pub/Sub: broadcast updates from any server instance to all connected clients
 sub.subscribe(UPDATE_CHANNEL, CONFIG_CHANNEL);
 sub.on('message', async (channel, message) => {
     if (channel === UPDATE_CHANNEL) {
