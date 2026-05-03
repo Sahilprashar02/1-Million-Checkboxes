@@ -20,7 +20,7 @@ module.exports = function(passport) {
         passport.use(new GoogleStrategy({
             clientID: clientId,
             clientSecret: clientSecret,
-            callbackURL: `http://localhost:${process.env.PORT || 5000}/auth/google/callback`
+            callbackURL: process.env.CALLBACK_URL || `http://localhost:${process.env.PORT || 5000}/auth/google/callback`
         }, (accessToken, refreshToken, profile, done) => {
             return done(null, {
                 id: profile.id,
