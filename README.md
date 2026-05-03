@@ -8,7 +8,8 @@
 <h1 align="center">1 Million Checkboxes</h1>
 
 <p align="center">
-  <b>A high-performance, real-time collaborative experiment.</b>
+  <b>A high-performance, real-time collaborative experiment.</b><br>
+  <a href="https://one-million-checkboxes-t4kl.onrender.com">🚀 View Live Demo</a>
 </p>
 
 ---
