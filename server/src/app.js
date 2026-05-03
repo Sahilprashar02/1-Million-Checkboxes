@@ -56,8 +56,12 @@ const clientPath = path.resolve(__dirname, '..', '..', 'client');
 app.use(express.static(clientPath));
 
 // Fallback: Serve index.html for any other GET requests (SPA style)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(clientPath, 'index.html'));
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/auth')) {
+        res.sendFile(path.join(clientPath, 'index.html'));
+    } else {
+        next();
+    }
 });
 
 // Broadcast connected user count to all clients
