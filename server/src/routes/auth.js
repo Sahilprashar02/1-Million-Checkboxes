@@ -2,7 +2,6 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 
-// Google OAuth
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback', 
@@ -12,12 +11,9 @@ router.get('/google/callback',
     }
 );
 
-// Mock / Guest Auth for local development
 router.get('/guest', (req, res, next) => {
     passport.authenticate('mock', (err, user) => {
-        if (err || !user) {
-            return res.status(400).json({ error: 'Guest login not available' });
-        }
+        if (err || !user) return res.status(400).json({ error: 'Guest login not available' });
         req.logIn(user, (err) => {
             if (err) return next(err);
             res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
