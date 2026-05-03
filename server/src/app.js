@@ -53,12 +53,25 @@ console.log('Auth routes initialized');
 
 // Serve static frontend files
 const clientPath = path.resolve(__dirname, '..', '..', 'client');
-app.use(express.static(clientPath));
+const fs = require('fs');
+
+console.log('Targeting client path:', clientPath);
+if (fs.existsSync(clientPath)) {
+    console.log('Client folder found! Serving static files.');
+    app.use(express.static(clientPath));
+} else {
+    console.error('CRITICAL: Client folder NOT FOUND at:', clientPath);
+}
 
 // Fallback: Serve index.html for any other GET requests (SPA style)
 app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/auth')) {
-        res.sendFile(path.join(clientPath, 'index.html'));
+        const indexPath = path.join(clientPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+        } else {
+            res.status(404).send('Frontend index.html not found on server');
+        }
     } else {
         next();
     }
