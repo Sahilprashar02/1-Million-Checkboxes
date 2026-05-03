@@ -44,6 +44,12 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Master Traffic Logger (Diagnostic)
+app.use((req, res, next) => {
+    console.log(`[TRAFFIC] ${req.method} ${req.url}`);
+    next();
+});
+
 require('./config/passport')(passport);
 
 // Auth routes (Move ABOVE static files to prevent 404s)
