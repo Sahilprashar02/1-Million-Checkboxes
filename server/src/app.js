@@ -47,11 +47,18 @@ app.use(passport.session());
 require('./config/passport')(passport);
 
 // Auth routes (Move ABOVE static files to prevent 404s)
+console.log('Registering Auth routes...');
 app.use('/auth', require('./routes/auth'));
+console.log('Auth routes initialized');
 
 // Serve static frontend files
 const clientPath = path.resolve(__dirname, '..', '..', 'client');
 app.use(express.static(clientPath));
+
+// Fallback: Serve index.html for any other GET requests (SPA style)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(clientPath, 'index.html'));
+});
 
 // Broadcast connected user count to all clients
 function broadcastUserCount() {
